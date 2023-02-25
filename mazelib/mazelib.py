@@ -48,7 +48,7 @@ class Maze:
         self.end = None
         self.solutions = None
 
-    def generate_entrances(self, start_outer=True, end_outer=True):
+    def generate_entrances(self, start_outer=True, end_outer=True, start_side=None):
         """Generate maze entrances. Entrances can be on the walls, or inside the maze.
 
         Args:
@@ -57,19 +57,19 @@ class Maze:
         Returns: None
         """
         if start_outer and end_outer:
-            self._generate_outer_entrances()
+            self._generate_outer_entrances(start_side)
         elif not start_outer and not end_outer:
             self._generate_inner_entrances()
         elif start_outer:
-            self.start, self.end = self._generate_opposite_entrances()
+            self.start, self.end = self._generate_opposite_entrances(start_side)
         else:
-            self.end, self.start = self._generate_opposite_entrances()
+            self.end, self.start = self._generate_opposite_entrances(start_side)
 
         # the start and end shouldn't be right next to each other
         if abs(self.start[0] - self.end[0]) + abs(self.start[1] - self.end[1]) < 2:
-            self.generate_entrances(start_outer, end_outer)
+            self.generate_entrances(start_outer, end_outer, start_side)
 
-    def _generate_outer_entrances(self):
+    def _generate_outer_entrances(self, start_side=None):
         """Generate maze entrances, along the outer walls.
 
         Returns: None
@@ -77,7 +77,8 @@ class Maze:
         H = self.grid.shape[0]
         W = self.grid.shape[1]
 
-        start_side = randrange(4)
+        if start_side is None:
+            start_side = randrange(4)
 
         # maze entrances will be on opposite sides of the maze.
         if start_side == 0:
@@ -109,7 +110,7 @@ class Maze:
 
         self.end = end
 
-    def _generate_opposite_entrances(self):
+    def _generate_opposite_entrances(self, start_side=None):
         """Generate one inner and one outer entrance.
 
         Returns:
@@ -117,7 +118,8 @@ class Maze:
         """
         H, W = self.grid.shape
 
-        start_side = randrange(4)
+        if start_side is None:
+            start_side = randrange(4)
 
         # pick a side for the outer maze entrance
         if start_side == 0:
